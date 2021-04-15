@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.1.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    "(p|pFluc|Cbar|pCorr|rho)"
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-8;
+        relTol          1e-4;
+    }
+
+    "(p|pFluc|Cbar|pCorr|rho)Final"
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-10;
+        relTol          1e-4;
+    }
+
+    "(rhoU|U|k|epsilon)"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-6;//1e-05;
+        relTol          1e-1;//0.1;
+    }
+
+    "(rhoU|U|k|epsilon)Final"
+    {
+        $U;
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-6;//1e-05;
+        relTol          0;
+    }
+
+    //"(rhoZmix|rhoC|rhoEnth|M00|M01|M10|N0|rhoYPAH)"
+    "(Zvar|Zmix|C|C1|C2|C3|C4|Enth|M00|M01|M10|N0|YPAH)"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-7;//1e-05;
+        relTol          1e-1;//0.1;
+    }
+
+    //"(rhoZmix|rhoC|rhoEnth|M00|M01|M10|N0|rhoYPAH)Final"
+    "(Zvar|Zmix|C|C1|C2|C3|C4|Enth|M00|M01|M10|N0|YPAH)Final"
+    {
+        $Zmix;
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-7;//1e-05;
+        relTol          0;
+    }
+}
+
+PIMPLE
+{
+    nOuterCorrectors         3;//1;
+    nCorrectors              2;//2;
+    nNonOrthogonalCorrectors 1;
+    pRefCell                 ;//3000;
+    pRefValue                ;//101325;
+    p_initRefCell            ;//3000;
+    p_initRefValue           ;//101325;
+}
+
+relaxationFactors
+{
+    fields
+    {
+    }
+    equations
+    {
+    }
+}
+
+
+// ************************************************************************* //

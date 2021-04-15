@@ -1,0 +1,79 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.1.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    default         Euler;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+    grad(U)         Gauss linear;
+    grad(Zmix)      Gauss linear;
+    grad(C)         Gauss linear;
+    grad(p)         Gauss midPoint;//Gauss linear;
+    grad(p_init)    Gauss midPoint;//Gauss linear;
+}
+
+divSchemes
+{
+    default                               Gauss linear;//Gauss limitedLinear 1;
+    div((phi|2),Zvar)                    Gauss upwind;// Gauss localBlended upwind limitedLinear 1;
+    div((phi|2),Zvar_0)                   Gauss upwind;//Gauss localBlended upwind limitedLinear 1;
+    div((phi|2),Zmix)                    Gauss upwind;// Gauss localBlended upwind limitedLinear 1;
+    div((phi|2),Zmix_0)                   Gauss upwind;//Gauss localBlended upwind limitedLinear 1;
+    div((phi|2),C)                        Gauss upwind;//Gauss localBlended upwind limitedLinear 1;
+    div((phi|2),C_0)                      Gauss upwind;//Gauss localBlended upwind limitedLinear 1;
+    div(((phi+phi_0)|4),U)                Gauss localBlended limitedLinear 0.7 midPoint;
+    div(((phi+phi_0)|4),U_0)              Gauss localBlended limitedLinear 0.7 midPoint;
+    div(((muEff*0.5)*dev2(T(grad(U)))))   Gauss linear;
+    div(((muEff*0.5)*dev2(T(grad(U_0))))) Gauss linear;
+    div((muEff*dev2(T(grad(U)))))         Gauss linear;
+}
+
+laplacianSchemes
+{
+    default                                      Gauss linear corrected;
+    laplacian((muEff|2),Zmix)                    Gauss linear corrected;
+    laplacian((muEff|2),Zmix_0)                  Gauss linear corrected;
+    laplacian((0.5*muEff),U)                     Gauss linear corrected;
+    laplacian(((0.5*muEff)*U_0))                 Gauss linear corrected;
+    laplacian((rhoTimeInterp*(1|A(U))),p)        Gauss midPoint limited 0.7;
+    laplacian((rhoTimeInterp*(1|A(U))),p_init)   Gauss linear corrected;
+}
+
+interpolationSchemes
+{
+    default                         linear;
+    interpolate((rhoTimeInterp*U))  midPoint;
+    interpolate(rho)                linear;
+}
+
+snGradSchemes
+{
+    default         corrected;
+}
+
+fluxRequired
+{
+    default         no;
+    p               ;
+    p_init          ;
+}
+
+// ************************************************************************* //
